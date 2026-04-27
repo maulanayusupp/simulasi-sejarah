@@ -28,12 +28,13 @@ const visibleEvents = () =>
   props.events.filter((e) => e.year <= props.selectedYear)
 
 function latLngToVector3(lat, lng, radius) {
-  const phi = (90 - lat) * (Math.PI / 180)
-  const theta = (lng + 180) * (Math.PI / 180)
-  const x = -radius * Math.sin(phi) * Math.cos(theta)
-  const z = radius * Math.sin(phi) * Math.sin(theta)
-  const y = radius * Math.cos(phi)
-  return new THREE.Vector3(x, y, z)
+  const phi = ((90 - lat) * Math.PI) / 180
+  const theta = ((90 - lng) * Math.PI) / 180
+  return new THREE.Vector3(
+    radius * Math.sin(phi) * Math.cos(theta),
+    radius * Math.cos(phi),
+    radius * Math.sin(phi) * Math.sin(theta)
+  )
 }
 
 function initGlobe() {
@@ -59,6 +60,8 @@ function initGlobe() {
   addStars()
 
   const geometry = new THREE.SphereGeometry(GLOBE_RADIUS, 64, 64)
+  // Selaraskan tekstur Earth (Greenwich) ke +Z (depan kamera) — sama seperti three-globe
+  geometry.rotateY(-Math.PI / 2)
 
   // Use YXZ order for predictable lat/lng rotation
 
@@ -396,7 +399,7 @@ function shortestAngle(from, to) {
 
 function startFlyTo(lat, lng) {
   const targetX = (lat * Math.PI) / 180
-  const targetY = (-lng * Math.PI) / 180 - Math.PI / 2
+  const targetY = (-lng * Math.PI) / 180
   flyState = {
     targetX,
     targetY,
