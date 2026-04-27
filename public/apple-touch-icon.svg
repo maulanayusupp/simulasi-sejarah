@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#1a1a3e"/>
+      <stop offset="100%" stop-color="#000010"/>
+    </radialGradient>
+    <radialGradient id="globe" cx="38%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="55%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0a0a35"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Solid background (iOS adds rounded corners) -->
+  <rect width="180" height="180" fill="url(#bg)"/>
+
+  <!-- Globe sphere -->
+  <circle cx="90" cy="90" r="68" fill="url(#globe)" stroke="#ffd700" stroke-width="3"/>
+
+  <!-- Latitude lines -->
+  <g fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="2">
+    <ellipse cx="90" cy="90" rx="68" ry="22"/>
+    <ellipse cx="90" cy="90" rx="68" ry="48"/>
+  </g>
+
+  <!-- Longitude lines -->
+  <g fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="2">
+    <ellipse cx="90" cy="90" rx="22" ry="68"/>
+    <ellipse cx="90" cy="90" rx="48" ry="68"/>
+    <line x1="90" y1="22" x2="90" y2="158"/>
+  </g>
+
+  <!-- Event dots with glow -->
+  <g>
+    <circle cx="60" cy="60" r="6.5" fill="#FF6347"/>
+    <circle cx="118" cy="70" r="6.5" fill="#DAA520"/>
+    <circle cx="100" cy="118" r="6.5" fill="#00CED1"/>
+    <circle cx="66" cy="112" r="6" fill="#FF1493"/>
+    <circle cx="78" cy="82" r="5" fill="#32CD32"/>
+  </g>
+</svg>

@@ -1,20 +1,73 @@
 <script setup>
-import { ref, watch, onBeforeUnmount } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({ event: { type: Object, default: null } })
 defineEmits(['close'])
 
 const isSpeaking = ref(false)
+const idVoiceAvailable = ref(false)
+const noticeMsg = ref('')
 const supported = typeof window !== 'undefined' && 'speechSynthesis' in window
 
 const formatYear = (y) => (y < 0 ? `${Math.abs(y)} SM` : `${y} M`)
 
-function speak() {
+let cachedIdVoice = null
+function pickIndonesianVoice() {
+  if (!supported) return null
+  const voices = window.speechSynthesis.getVoices() || []
+  const id =
+    voices.find((v) => v.lang === 'id-ID') ||
+    voices.find((v) => v.lang && v.lang.toLowerCase().startsWith('id'))
+  return id || null
+}
+
+function refreshVoice() {
+  cachedIdVoice = pickIndonesianVoice()
+  idVoiceAvailable.value = !!cachedIdVoice
+}
+
+function ensureVoicesLoaded() {
+  return new Promise((resolve) => {
+    if (!supported) return resolve(null)
+    refreshVoice()
+    if (cachedIdVoice) return resolve(cachedIdVoice)
+    let settled = false
+    const handler = () => {
+      refreshVoice()
+      if (cachedIdVoice && !settled) {
+        settled = true
+        window.speechSynthesis.removeEventListener('voiceschanged', handler)
+        resolve(cachedIdVoice)
+      }
+    }
+    window.speechSynthesis.addEventListener('voiceschanged', handler)
+    setTimeout(() => {
+      if (!settled) {
+        settled = true
+        window.speechSynthesis.removeEventListener('voiceschanged', handler)
+        refreshVoice()
+        resolve(cachedIdVoice)
+      }
+    }, 1500)
+  })
+}
+
+async function speak() {
   if (!supported || !props.event) return
   stop()
+  noticeMsg.value = ''
+
+  const voice = await ensureVoicesLoaded()
+  if (!voice) {
+    noticeMsg.value =
+      'Suara Bahasa Indonesia tidak tersedia di perangkat ini. Pasang voice "Indonesian" di pengaturan sistem, atau coba browser lain (Chrome/Edge).'
+    return
+  }
+
   const text = `${props.event.name}. Tahun ${formatYear(props.event.year)}. ${props.event.description}`
   const utt = new SpeechSynthesisUtterance(text)
-  utt.lang = 'id-ID'
+  utt.voice = voice
+  utt.lang = voice.lang || 'id-ID'
   utt.rate = 0.95
   utt.pitch = 1
   utt.onend = () => (isSpeaking.value = false)
@@ -29,12 +82,28 @@ function stop() {
   isSpeaking.value = false
 }
 
+onMounted(() => {
+  if (!supported) return
+  refreshVoice()
+  if (!cachedIdVoice) {
+    window.speechSynthesis.addEventListener('voiceschanged', refreshVoice)
+  }
+})
+
 watch(
   () => props.event?.id,
-  () => stop()
+  () => {
+    stop()
+    noticeMsg.value = ''
+  }
 )
 
-onBeforeUnmount(() => stop())
+onBeforeUnmount(() => {
+  stop()
+  if (supported) {
+    window.speechSynthesis.removeEventListener('voiceschanged', refreshVoice)
+  }
+})
 </script>
 
 <template>
@@ -48,9 +117,14 @@ onBeforeUnmount(() => stop())
       <div class="year">{{ formatYear(event.year) }}</div>
       <p>{{ event.description }}</p>
       <div class="actions" v-if="supported">
-        <button class="audio-btn" @click="isSpeaking ? stop() : speak()">
-          {{ isSpeaking ? '⏹ Hentikan' : '🔊 Dengarkan' }}
+        <button
+          class="audio-btn"
+          :disabled="!isSpeaking && !idVoiceAvailable && noticeMsg !== ''"
+          @click="isSpeaking ? stop() : speak()"
+        >
+          {{ isSpeaking ? '⏹ Hentikan' : '🔊 Dengarkan (ID)' }}
         </button>
+        <p v-if="noticeMsg" class="audio-notice">{{ noticeMsg }}</p>
       </div>
       <div class="coords">
         Koordinat: {{ event.lat.toFixed(2) }}°, {{ event.lng.toFixed(2) }}°
@@ -122,8 +196,22 @@ p {
   font-weight: bold;
   transition: all 0.2s;
 }
-.audio-btn:hover {
+.audio-btn:hover:not(:disabled) {
   background: rgba(255, 215, 0, 0.3);
+}
+.audio-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.audio-notice {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #ffb84d;
+  background: rgba(255, 184, 77, 0.08);
+  border: 1px solid rgba(255, 184, 77, 0.3);
+  padding: 6px 10px;
+  border-radius: 8px;
 }
 .coords {
   margin-top: 12px;

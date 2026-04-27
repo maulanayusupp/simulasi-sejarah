@@ -1,0 +1,25 @@
+{
+  "name": "Simulasi Sejarah Dunia 3D",
+  "short_name": "Sejarah 3D",
+  "description": "Globe 3D interaktif untuk menjelajahi peristiwa sejarah dunia dari 3000 SM hingga 2025 M.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000010",
+  "theme_color": "#000010",
+  "lang": "id-ID",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

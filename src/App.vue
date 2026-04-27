@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Globe3D from './components/Globe3D.vue'
 import Timeline from './components/Timeline.vue'
 import InfoPanel from './components/InfoPanel.vue'
@@ -13,6 +13,26 @@ const selectedEvent = ref(null)
 const autoRotate = ref(true)
 const flyTo = ref(null)
 const showRoutes = ref(true)
+
+const DISCLAIMER_KEY = 'sejarah3d-disclaimer-ack-v1'
+const showDisclaimer = ref(false)
+
+onMounted(() => {
+  try {
+    if (!localStorage.getItem(DISCLAIMER_KEY)) {
+      showDisclaimer.value = true
+    }
+  } catch (e) {
+    showDisclaimer.value = true
+  }
+})
+
+function acknowledgeDisclaimer() {
+  try {
+    localStorage.setItem(DISCLAIMER_KEY, '1')
+  } catch (e) {}
+  showDisclaimer.value = false
+}
 
 const activeRoutes = computed(() =>
   showRoutes.value ? historyRoutes : []
@@ -48,8 +68,55 @@ function handleNewEvent(event) {
   <div class="app">
     <header class="header">
       <h1>🌍 Simulasi Sejarah Dunia 3D</h1>
-      <p>Geser timeline untuk melihat peristiwa sejarah muncul di globe</p>
+      <p>
+        Geser timeline untuk melihat peristiwa sejarah muncul di globe
+        <button
+          class="disclaimer-link"
+          @click="showDisclaimer = true"
+          aria-label="Lihat disclaimer"
+        >
+          ⚠️ Disclaimer
+        </button>
+      </p>
     </header>
+
+    <transition name="modal">
+      <div
+        v-if="showDisclaimer"
+        class="disclaimer-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="disclaimer-title"
+        @click.self="acknowledgeDisclaimer"
+      >
+        <div class="disclaimer-modal">
+          <h2 id="disclaimer-title">⚠️ Disclaimer</h2>
+          <p>
+            <strong>Simulasi Sejarah Dunia 3D</strong> adalah proyek edukasi dan
+            visualisasi interaktif. Data peristiwa, tahun, lokasi (titik
+            koordinat), serta rute yang ditampilkan dirangkum dari berbagai
+            sumber sekunder dan dapat mengandung:
+          </p>
+          <ul>
+            <li>Kesalahan titik koordinat (lokasi mendekati, bukan presisi).</li>
+            <li>Tahun yang merupakan perkiraan atau masih diperdebatkan sejarawan.</li>
+            <li>Penyederhanaan rute, batas wilayah, dan nama peradaban.</li>
+            <li>Informasi yang belum lengkap atau memerlukan penelitian lanjutan.</li>
+          </ul>
+          <p>
+            Mohon <strong>tidak menjadikan aplikasi ini sebagai satu-satunya rujukan
+            akademik</strong>. Untuk keperluan riset, tugas, atau kutipan, silakan
+            verifikasi ke sumber primer dan literatur sejarah terpercaya.
+          </p>
+          <p class="disclaimer-feedback">
+            Menemukan kesalahan? Masukan dan koreksi sangat kami hargai.
+          </p>
+          <button class="disclaimer-btn" @click="acknowledgeDisclaimer">
+            Saya Mengerti
+          </button>
+        </div>
+      </div>
+    </transition>
 
     <div class="globe-wrapper">
       <Globe3D
@@ -151,6 +218,104 @@ function handleNewEvent(event) {
   font-size: 13px;
   color: #aaa;
 }
+.disclaimer-link {
+  background: transparent;
+  border: 1px solid #ffd700;
+  color: #ffd700;
+  padding: 2px 10px;
+  margin-left: 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.disclaimer-link:hover {
+  background: rgba(255, 215, 0, 0.15);
+}
+.disclaimer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.disclaimer-modal {
+  background: linear-gradient(180deg, #0f0f2a 0%, #050514 100%);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 14px;
+  padding: 24px 28px;
+  max-width: 540px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  color: #eee;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+.disclaimer-modal h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  color: #ffd700;
+}
+.disclaimer-modal p {
+  margin: 10px 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #ddd;
+}
+.disclaimer-modal ul {
+  margin: 8px 0 14px;
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #cfcfcf;
+}
+.disclaimer-modal li {
+  margin-bottom: 4px;
+}
+.disclaimer-modal strong {
+  color: #fff;
+}
+.disclaimer-feedback {
+  font-style: italic;
+  color: #aaa !important;
+  font-size: 12.5px !important;
+}
+.disclaimer-btn {
+  margin-top: 12px;
+  width: 100%;
+  background: #ffd700;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.disclaimer-btn:hover {
+  background: #ffcc00;
+  transform: translateY(-1px);
+}
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.25s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+.modal-enter-active .disclaimer-modal,
+.modal-leave-active .disclaimer-modal {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-enter-from .disclaimer-modal {
+  transform: translateY(20px) scale(0.96);
+}
 .globe-wrapper {
   flex: 1;
   position: relative;
@@ -196,17 +361,18 @@ function handleNewEvent(event) {
   bottom: 20px;
   right: 20px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 8px;
+  justify-content: flex-end;
 }
 .action-btn {
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid #ffd700;
   color: #ffd700;
-  padding: 10px 18px;
+  padding: 8px 14px;
   border-radius: 24px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: bold;
   transition: all 0.2s;
   backdrop-filter: blur(10px);
@@ -306,13 +472,31 @@ function handleNewEvent(event) {
   .action-buttons {
     bottom: 10px;
     right: 10px;
+    flex-wrap: wrap;
+    max-width: calc(100% - 20px);
   }
   .action-btn {
-    padding: 8px 12px;
-    font-size: 11px;
+    padding: 6px 10px;
+    font-size: 10px;
   }
   .timeline-wrapper {
     padding: 10px 14px 14px;
+  }
+  .disclaimer-link {
+    display: inline-block;
+    margin: 4px 0 0;
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+  .disclaimer-modal {
+    padding: 18px 18px 22px;
+  }
+  .disclaimer-modal h2 {
+    font-size: 17px;
+  }
+  .disclaimer-modal p,
+  .disclaimer-modal ul {
+    font-size: 12.5px;
   }
 }
 </style>

@@ -1,13 +1,151 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#000010" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>Simulasi Sejarah Dunia 3D — Globe Interaktif Peristiwa Sejarah</title>
+    <meta
+      name="description"
+      content="Jelajahi sejarah dunia secara interaktif lewat globe 3D. Geser timeline dari 3000 SM hingga 2025 M dan lihat peristiwa sejarah, peradaban, perang, dan rute perdagangan muncul di peta bumi."
+    />
+    <meta
+      name="keywords"
+      content="simulasi sejarah, sejarah dunia 3D, globe interaktif, timeline sejarah, peristiwa sejarah dunia, peta sejarah, peradaban kuno, sejarah Indonesia, three.js globe, edukasi sejarah"
+    />
+    <meta name="author" content="Maulana" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="googlebot" content="index, follow" />
+    <link rel="canonical" href="https://simulasi-sejarah-3d.vercel.app/" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>simulasi-sejarah-3d</title>
+    <link rel="mask-icon" href="/favicon.svg" color="#ffd700" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="dns-prefetch" href="https://unpkg.com" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:site_name" content="Simulasi Sejarah Dunia 3D" />
+    <meta property="og:url" content="https://simulasi-sejarah-3d.vercel.app/" />
+    <meta property="og:title" content="Simulasi Sejarah Dunia 3D — Globe Interaktif Peristiwa Sejarah" />
+    <meta
+      property="og:description"
+      content="Jelajahi peristiwa sejarah dari 3000 SM hingga 2025 M lewat globe 3D interaktif. Geser timeline, pilih kategori, dan saksikan peradaban tumbuh di peta bumi."
+    />
+    <meta property="og:image" content="https://simulasi-sejarah-3d.vercel.app/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Tampilan globe 3D dengan titik-titik peristiwa sejarah dunia" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Simulasi Sejarah Dunia 3D — Globe Interaktif Peristiwa Sejarah" />
+    <meta
+      name="twitter:description"
+      content="Globe 3D interaktif untuk menjelajahi sejarah dunia dari 3000 SM hingga 2025 M. Timeline, kategori, rute perdagangan, dan peradaban dalam satu peta."
+    />
+    <meta name="twitter:image" content="https://simulasi-sejarah-3d.vercel.app/og-image.svg" />
+    <meta name="twitter:image:alt" content="Tampilan globe 3D dengan peristiwa sejarah dunia" />
+
+    <!-- Structured Data: WebApplication -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Simulasi Sejarah Dunia 3D",
+        "alternateName": "3D World History Simulation",
+        "url": "https://simulasi-sejarah-3d.vercel.app/",
+        "description": "Globe 3D interaktif untuk menjelajahi peristiwa sejarah dunia dari 3000 SM hingga 2025 M dengan timeline, filter kategori, dan visualisasi rute perdagangan.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "inLanguage": "id-ID",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "IDR"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Maulana"
+        }
+      }
+    </script>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <header>
+        <h1>🌍 Simulasi Sejarah Dunia 3D</h1>
+        <p>
+          Globe interaktif untuk menjelajahi peristiwa sejarah dunia dari 3000 SM
+          hingga 2025 M. Geser timeline, pilih kategori, dan saksikan peradaban,
+          perang, penjelajahan, serta rute perdagangan muncul di atas peta bumi.
+        </p>
+      </header>
+      <section>
+        <h2>Tentang aplikasi</h2>
+        <p>
+          Simulasi Sejarah Dunia 3D adalah proyek edukasi berbasis web yang
+          memvisualisasikan ratusan peristiwa sejarah pada globe 3D. Setiap titik
+          mewakili satu peristiwa dengan koordinat geografis, tahun kejadian, dan
+          deskripsi singkat. Cocok untuk pelajar, pengajar sejarah, dan siapa pun
+          yang ingin memahami konteks geografis peradaban manusia.
+        </p>
+      </section>
+      <section>
+        <h2>Kategori peristiwa</h2>
+        <ul>
+          <li><strong>Nusantara</strong> — Sriwijaya, Majapahit, Borobudur, kemerdekaan Indonesia.</li>
+          <li><strong>Peradaban Kuno</strong> — Mesopotamia, Mesir Kuno, Romawi, Mongol.</li>
+          <li><strong>Perdagangan</strong> — Jalur Sutra, VOC, Terusan Suez.</li>
+          <li><strong>Penjelajahan</strong> — Cheng Ho, Columbus, Vasco da Gama, Magellan.</li>
+          <li><strong>Revolusi</strong> — Revolusi Prancis, Kemerdekaan AS, Revolusi Bolshevik.</li>
+          <li><strong>Sains</strong> — Mesin cetak Gutenberg, Newton, Darwin, Penisilin, Sputnik.</li>
+          <li><strong>Agama</strong> — Lahirnya Buddha, Hijrah Nabi Muhammad, Reformasi Protestan.</li>
+          <li><strong>Perang</strong> — Perang Troya, Perang Salib, Perang Dunia I &amp; II.</li>
+          <li><strong>Budaya</strong> — Olimpiade Kuno, ajaran Konfusius.</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Contoh peristiwa</h2>
+        <ul>
+          <li><strong>3500 SM</strong> — Penemuan tulisan paku Sumeria di Mesopotamia.</li>
+          <li><strong>2560 SM</strong> — Pembangunan Piramida Giza di Mesir Kuno.</li>
+          <li><strong>563 SM</strong> — Lahirnya Siddhartha Gautama (Buddha) di Lumbini.</li>
+          <li><strong>221 SM</strong> — Qin Shi Huang menyatukan Tiongkok.</li>
+          <li><strong>622 M</strong> — Hijrah Nabi Muhammad ke Madinah, awal kalender Hijriah.</li>
+          <li><strong>800 M</strong> — Pembangunan Candi Borobudur oleh Dinasti Syailendra.</li>
+          <li><strong>1293 M</strong> — Berdirinya Kerajaan Majapahit di Trowulan.</li>
+          <li><strong>1453 M</strong> — Jatuhnya Konstantinopel ke tangan Utsmaniyah.</li>
+          <li><strong>1602 M</strong> — VOC didirikan, perusahaan multinasional pertama di dunia.</li>
+          <li><strong>1945 M</strong> — Proklamasi Kemerdekaan Indonesia oleh Soekarno-Hatta.</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Fitur utama</h2>
+        <ul>
+          <li>Timeline interaktif dari 3000 SM sampai 2025 M.</li>
+          <li>Filter berdasarkan kategori peristiwa.</li>
+          <li>Visualisasi rute perdagangan dan penjelajahan klasik.</li>
+          <li>Auto-rotasi globe dan fly-to ke lokasi peristiwa.</li>
+          <li>Narasi suara berbahasa Indonesia (text-to-speech) untuk tiap peristiwa.</li>
+          <li>Tampilan responsif untuk desktop dan mobile.</li>
+        </ul>
+      </section>
+    </div>
+    <noscript>
+      <p style="padding:16px;color:#ffd700;background:#000010;font-family:system-ui,sans-serif">
+        Globe 3D interaktif memerlukan JavaScript. Aktifkan JavaScript di peramban
+        Anda untuk pengalaman penuh — atau baca ringkasan konten di atas.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

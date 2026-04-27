@@ -390,27 +390,21 @@ function onResize() {
   renderer.setSize(w, h)
 }
 
-function shortestAngle(from, to) {
-  let diff = (to - from) % (Math.PI * 2)
-  if (diff > Math.PI) diff -= Math.PI * 2
-  if (diff < -Math.PI) diff += Math.PI * 2
-  return diff
-}
-
 function startFlyTo(lat, lng) {
-  const targetX = (lat * Math.PI) / 180
-  const targetY = (-lng * Math.PI) / 180
+  // Arah dari pusat bumi ke titik (lat, lng) — di local space globe
+  const targetDir = latLngToVector3(lat, lng, 1).normalize()
+  // Quaternion yang merotasi arah target supaya menghadap kamera (+Z)
+  const targetQuat = new THREE.Quaternion().setFromUnitVectors(
+    targetDir,
+    new THREE.Vector3(0, 0, 1)
+  )
   flyState = {
-    targetX,
-    targetY,
-    targetZ: 170,
+    startQuat: globe.quaternion.clone(),
+    targetQuat,
+    startCameraZ: camera.position.z,
+    targetCameraZ: 170,
     elapsed: 0,
     duration: 1.2,
-    startX: globe.rotation.x,
-    startY: globe.rotation.y,
-    startZ: camera.position.z,
-    deltaX: shortestAngle(globe.rotation.x, targetX),
-    deltaY: shortestAngle(globe.rotation.y, targetY),
   }
 }
 
@@ -425,9 +419,14 @@ function animate() {
     flyState.elapsed += 1 / 60
     const t = Math.min(flyState.elapsed / flyState.duration, 1)
     const eased = easeInOutCubic(t)
-    globe.rotation.x = flyState.startX + flyState.deltaX * eased
-    globe.rotation.y = flyState.startY + flyState.deltaY * eased
-    camera.position.z = flyState.startZ + (flyState.targetZ - flyState.startZ) * eased
+    globe.quaternion.slerpQuaternions(
+      flyState.startQuat,
+      flyState.targetQuat,
+      eased
+    )
+    camera.position.z =
+      flyState.startCameraZ +
+      (flyState.targetCameraZ - flyState.startCameraZ) * eased
     if (t >= 1) flyState = null
   } else if (props.autoRotate) {
     globe.rotation.y += 0.0008

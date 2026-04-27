@@ -66,10 +66,10 @@ const formatYear = (y) => (y < 0 ? `${Math.abs(y)} SM` : `${y} M`)
 <style scoped>
 .event-list {
   position: absolute;
-  top: 80px;
+  top: 20px;
   right: 20px;
+  bottom: 110px;
   width: 320px;
-  max-height: calc(100vh - 250px);
   background: rgba(10, 10, 30, 0.85);
   border: 1px solid #444;
   border-radius: 12px;
@@ -192,7 +192,7 @@ h3 {
     width: 260px;
     top: 60px;
     right: 10px;
-    max-height: calc(100vh - 200px);
+    bottom: 80px;
   }
 }
 </style>
