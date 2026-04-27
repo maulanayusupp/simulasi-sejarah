@@ -1,19 +1,57 @@
 <script setup>
-defineProps({ event: { type: Object, default: null } })
+import { ref, watch, onBeforeUnmount } from 'vue'
+
+const props = defineProps({ event: { type: Object, default: null } })
 defineEmits(['close'])
+
+const isSpeaking = ref(false)
+const supported = typeof window !== 'undefined' && 'speechSynthesis' in window
+
 const formatYear = (y) => (y < 0 ? `${Math.abs(y)} SM` : `${y} M`)
+
+function speak() {
+  if (!supported || !props.event) return
+  stop()
+  const text = `${props.event.name}. Tahun ${formatYear(props.event.year)}. ${props.event.description}`
+  const utt = new SpeechSynthesisUtterance(text)
+  utt.lang = 'id-ID'
+  utt.rate = 0.95
+  utt.pitch = 1
+  utt.onend = () => (isSpeaking.value = false)
+  utt.onerror = () => (isSpeaking.value = false)
+  isSpeaking.value = true
+  window.speechSynthesis.speak(utt)
+}
+
+function stop() {
+  if (!supported) return
+  window.speechSynthesis.cancel()
+  isSpeaking.value = false
+}
+
+watch(
+  () => props.event?.id,
+  () => stop()
+)
+
+onBeforeUnmount(() => stop())
 </script>
 
 <template>
   <transition name="fade">
     <div v-if="event" class="info-panel">
-      <button class="close-btn" @click="$emit('close')">×</button>
+      <button class="close-btn" @click="stop(); $emit('close')">×</button>
       <div class="badge" :style="{ background: event.color }">
         {{ event.category }}
       </div>
       <h2>{{ event.name }}</h2>
       <div class="year">{{ formatYear(event.year) }}</div>
       <p>{{ event.description }}</p>
+      <div class="actions" v-if="supported">
+        <button class="audio-btn" @click="isSpeaking ? stop() : speak()">
+          {{ isSpeaking ? '⏹ Hentikan' : '🔊 Dengarkan' }}
+        </button>
+      </div>
       <div class="coords">
         Koordinat: {{ event.lat.toFixed(2) }}°, {{ event.lng.toFixed(2) }}°
       </div>
@@ -24,9 +62,10 @@ const formatYear = (y) => (y < 0 ? `${Math.abs(y)} SM` : `${y} M`)
 <style scoped>
 .info-panel {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 320px;
+  bottom: 70px;
+  left: 20px;
+  width: 340px;
+  z-index: 5;
   background: rgba(10, 10, 30, 0.9);
   border: 1px solid #444;
   border-radius: 12px;
@@ -69,6 +108,23 @@ p {
   line-height: 1.6;
   color: #ddd;
 }
+.actions {
+  margin-top: 12px;
+}
+.audio-btn {
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid #ffd700;
+  color: #ffd700;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+.audio-btn:hover {
+  background: rgba(255, 215, 0, 0.3);
+}
 .coords {
   margin-top: 12px;
   font-size: 11px;
@@ -82,5 +138,20 @@ p {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .info-panel {
+    width: calc(100% - 20px);
+    left: 10px;
+    bottom: 60px;
+    padding: 14px;
+  }
+  h2 {
+    font-size: 16px;
+  }
+  p {
+    font-size: 12px;
+  }
 }
 </style>
